@@ -1,8 +1,5 @@
 # Data
-data/raw
-data/raw/test
-data/raw/train
-data/raw/validation
+#For now I will send the data to github (not too big yet)
 
 # API requirements (should be generated via pipenv lock --requirements --dev > api/requirements.txt)
 api/requirements.txt
