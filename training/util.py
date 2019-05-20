@@ -31,6 +31,7 @@ def train_model(
         model: Model,
         epochs: int,
         batch_size: int,
+        gpu_ind: Optional[int] = None,
         use_wandb: bool = True) -> Model:
   
     """Train model."""

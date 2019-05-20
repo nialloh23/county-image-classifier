@@ -6,6 +6,7 @@ from typing import Callable, Dict, Optional
 import wandb
 import argparse
 import json
+import os
 
 from util import train_model
 import importlib
@@ -13,7 +14,7 @@ import importlib
 
 
 
-def run_experiment(experiment_config: Dict, save_weights: bool, use_wandb: bool = True):
+def run_experiment(experiment_config: Dict, save_weights: bool, gpu_ind: int, use_wandb: bool = True):
      
     datasets_module = importlib.import_module('county_classifier.datasets')
     dataset_class_ = getattr(datasets_module, experiment_config['dataset'])
@@ -29,6 +30,7 @@ def run_experiment(experiment_config: Dict, save_weights: bool, use_wandb: bool 
         
     
     experiment_config['train_args'] = {**experiment_config.get('train_args', {})}
+    experiment_config['gpu_ind'] = gpu_ind
     
     if use_wandb:
         wandb.init()  #initializes project in wandb
@@ -47,6 +49,7 @@ def run_experiment(experiment_config: Dict, save_weights: bool, use_wandb: bool 
         model,
         epochs=experiment_config['train_args']['epochs'],
         batch_size=experiment_config['train_args']['batch_size'],
+        gpu_ind=gpu_ind,
         use_wandb=use_wandb
     )
     
@@ -56,12 +59,12 @@ def run_experiment(experiment_config: Dict, save_weights: bool, use_wandb: bool 
 def _parse_args():
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser()
-#   parser.add_argument(
-#        "--gpu",
-#        type=int,
-#        default=0,
-#        help="Provide index of GPU to use."
-#    )
+    parser.add_argument(
+         "--gpu",
+         type=int,
+         default=0,
+         help="Provide index of GPU to use."
+    )
     
     parser.add_argument(
         "--save",
@@ -98,8 +101,8 @@ def main():
     # Hide lines above until Lab 4
 
     experiment_config = json.loads(args.experiment_config)
-#    os.environ["CUDA_VISIBLE_DEVICES"] = '{}'.format(args.gpu)
-    run_experiment(experiment_config, args.save, args.nowandb)
+    os.environ["CUDA_VISIBLE_DEVICES"] = '{}'.format(args.gpu)
+    run_experiment(experiment_config, args.save, args.gpu, args.nowandb)
 
 if __name__ == '__main__':
     main()

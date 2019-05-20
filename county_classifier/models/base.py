@@ -37,7 +37,7 @@ class Model:
         
        
         train_generator = dataset.train_datagen.flow_from_directory(
-            dataset.train_dir,
+            str(dataset.train_dir),
             target_size=(300, 300),
             batch_size = 10,
             class_mode='categorical',
@@ -46,7 +46,7 @@ class Model:
         
         
         validation_generator = dataset.validation_datagen.flow_from_directory(
-            dataset.validation_dir,
+            str(dataset.validation_dir),
             target_size=(300, 300),
             batch_size = batch_size,
             class_mode='categorical',
@@ -67,7 +67,7 @@ class Model:
         self.network.compile(loss=self.loss(), optimizer=self.optimizer(), metrics=self.metrics())
         
         test_generator = dataset.test_datagen.flow_from_directory(
-            dataset.test_dir,
+            str(dataset.test_dir),
             target_size=(300, 300),
             batch_size = batch_size,
             class_mode='categorical',
