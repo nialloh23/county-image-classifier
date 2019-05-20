@@ -5,7 +5,7 @@ FROM ubuntu:18.04
 RUN apt-get update && apt-get install python3-pip -y && pip3 install virtualenv
 
 #Fix issue with openCV not working
-RUN apt-get update && apt-get install -y libsm6 libxext6 libxrender-dev && pip3 install opencv-python
+#RUN apt-get update && apt-get install -y libsm6 libxext6 libxrender-dev && pip3 install opencv-python
 
 
 # Create the working directory
