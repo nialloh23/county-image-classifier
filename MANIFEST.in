@@ -1,0 +1,11 @@
+include *.txt
+include *.md
+include *.cfg
+include *.pkl
+recursive-include ./county_classifier/*
+
+
+include county_classifier/weights/*.h5
+include county_classifier/VERSION
+
+include ./requirements.txt
