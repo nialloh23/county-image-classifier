@@ -5,42 +5,49 @@
 version: 2
 jobs:
   build:
-    working_directory: ~/county-image-classifier
+  #  working_directory: ~/county-image-classifier
     docker:
       # specify the version you desire here
-      - image: circleci/python:3.6.7
+      - image: circleci/python:3.6.5
 
     steps:
       - checkout
         # Download and cache dependencies
-      #- restore_cache:
-      #    keys:
-      #    - v1-dependencies-{{ checksum "requirements.txt" }}
+      - restore_cache:
+          keys:
+          - cache-{{ checksum "requirements.txt" }}
           # fallback to using the latest cache if no exact match is found
       #    - v1-dependencies-
+      - run:
+          name: Install Git LFS
+          command: |
+            curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+            sudo apt-get install git-lfs
+            git lfs install
+      - run:
+          name: Pull LFS Files
+          command: git lfs pull
 
       - run:
-          name: Install Python deps in a venv
+          name: Install Python dependencies in a venv
           command: |
             python3 -m venv project_env
-            . project_env/bin/activate
+            source project_env/bin/activate
             pip install -r requirements.txt
 
       - save_cache:
           paths:
             - ./project_env
-          key: v1-dependencies-{{ checksum "requirements.txt" }}
+          key: cache-{{ checksum "requirements.txt" }}
 
       - run:
           name: run prediction tests
           command: |
             . project_env/bin/activate
-            PYTHONPATH=./county_classifier python county_classifier/tests/test_image_predictor.py
+            PYTHONPATH=. python county_classifier/tests/test_image_predictor.py
 
-    #  - run:
-    #      name: run evaluation tests
-    #      command: |
-     #       cd lab9 && PYTHONPATH=. pipenv run pytest -s evaluation/*
-    #  - store_artifacts:
-    #      path: test-reports
-    #      destination: test-reports
+      - run:
+          name: run evaluation tests
+          command: |
+            . project_env/bin/activate
+            PYTHONPATH=. python evaluation/evaluate_image_predictor.py
