@@ -109,6 +109,11 @@ We can look at the requests our function is receiving in the AWS CloudWatch inte
 + To view a dashboard of results click on the dashboard tab on the left hand side (this includes custom metrics we are tracking.  
 
 
-
-
+## Push Changes to Gitub
+### 1. Freeze requirments files
+  ```pip freeze > requirements.txt ```  
   
+### 2. Add, commit, push to Github
+  ```git add .  git commit -m "note" git push origin master``` 
+
+### 3. Check Circle CI checks pass in app & github
