@@ -9,27 +9,30 @@
 ## Setup
 ### 1. Check Out the Repo
 If you already have the repo in your directory. Go into it and make sure you have the latest:  
-```cd fsdl-text-recognizer-project```  
+```cd county-image-classifier```  
 ```git pull origin master```
 
 If not, open a shell in your JupyterLab instance and run:  
-```git clone https://github.com/gradescope/county-image-classifier.git```  
+```git clone https://github.com/nialloh23/county-image-classifier.git```  
 ```cd county-image-classifier```  
 
 ### 2. Setup the Python Enviornment
-Setup a virtual environment for the project. Activate the environment and install the project package requirements.
+Setup a virtual environment for the project. Activate the environment and install the project package requirements.  
 ```python3 -m venv project_env```  
 ```source project_env/bin/activate```  
-```Pip install -r requirements.txt```  
+```pip install -r requirements.txt```  
 
 ## Training
 
 ### 1. Data preparation
 + Upload the images you wish to include in your training to Data Turks annotation tool to in the form of a text file of S3 URLs.  (at the moment I’m getting the creating the URLs in excel -> need to automate)  
+```data/county_classifier/county_players_1_300.txt```
 
 + After classifying the images with labels download the resulting json file. This contains S3 URLs to the raw images and associated labels. (insert link)  
+```data/county_classifier/gaa_county_classification.json```
 
 + Update the metadata.toml file with the name of the json file and SHA reference  
+```data/county_classifier/metadata.toml```
 
 + When you eventually start training. If the dataset & labels have not been downloaded already they will be downloaded and split into train, valid and test folders ready for training using keras fit_generators. If the images & labels have already been downloaded this step will be skipped. 
 
@@ -39,6 +42,39 @@ Setup a virtual environment for the project. Activate the environment and instal
 + If you want to run a series of experiments in parallel you can edit the json configuration file in the experiments folder.  
 
 + In the config file you can specify the dataset, model and network to use. You can also set some network & training arguments (e.g. batch size, #epochs, filter size etc.)  
+
+```python
+{
+    "experiment_group": "Sample Experiments",
+    "experiments": [
+        {
+            "dataset": "GaaDataset",
+            "model": "CnnModel",
+            "network": "cnn_network",
+            "network_args": {
+                "kernel_size": 2
+            },
+            "train_args": {
+                "batch_size": 10,
+                "epochs": 2
+            }
+        },
+        {
+            "dataset": "GaaDataset",
+            "model": "CnnModel",
+            "network": "cnn_network",
+            "network_args": {
+                "kernel_size": 2
+            },
+            "train_args": {
+                "batch_size": 20,
+                "epochs": 2
+            }
+        },
+    ]
+}
+
+```
 
 ### 3. Start the Training Process
 ```bash tasks/train_county_classifier.sh```  
@@ -50,7 +86,8 @@ By the end of this process, the code will write the weights of the trained model
 
 If you wish to run multiple experiments in parallel you can run the following shortcut command:
 ```tasks/prepare_sample_experiments.sh```  
-This will run the experiments you have specified in the experiments config two at a time, and as soon as one finished, another one will start. Although you can't see output in the terminal, you can confirm that the experiments are running by going to Weights and Biases.  
+
+This will run the multiple experiments you have specified in the experiments config two at a time, and as soon as one finished, another one will start. Although you can't see output in the terminal, you can confirm that the experiments are running by going to Weights and Biases.  
 
 
  ## Evaluate  
@@ -59,16 +96,19 @@ To compare the performance of various experiments that you run and to visualize 
  
  ### 2. Evaluate the performance
  ```bash tasks/run_validation_tests```  
+ 
 This evaluates the performance of the classification model across the entire set of validation data. It asserts that the accuracy must be above 0.2 and the time taken must be below 10s.
 
  ## Predict
  ```bash tasks/run_prediction_tests.sh ```  
+ 
 This tests the classification model on a test image (e.g. Dubline_01.jpg) asserts that the prediction is correct and that the confidence level must be above 0.6.  
 
 ## Deploy  
  
 ### 1. Test the API
   ```bash tasks/test_api.sh ```  
+  
 Runs a test on the api to make sure it is (a) serving responses (b) serving the correct predictions using an assertion on a test image (e.g. classification = kerry).  
 
 ### 2. Build docker image
@@ -86,8 +126,8 @@ npx sls deploy -v
 ```  
 
 ### 4. Run Prediction via API
-  ```bash tasks/build_api_docker.sh ```  
-As before, we can test out our API by running a few curl commands. We need to change the API_URL first though to point it at Lambda:
+
+We can test out our API by running a few curl commands. We need to change the API_URL first though to point it at Lambda:
   ```
   export API_URL="https://rhnuvxmfmk.execute-api.us-west-2.amazonaws.com/dev"  
   (echo -n '{ "image": "data:image/jpg;base64,'$(base64 -w0 -i county_classifier/tests/support/dublin.jpg)'" }') |  
@@ -117,3 +157,4 @@ We can look at the requests our function is receiving in the AWS CloudWatch inte
   ```git add .  git commit -m "note" git push origin master``` 
 
 ### 3. Check Circle CI checks pass in app & github
+https://circleci.com/gh/nialloh23/county-image-classifier
