@@ -28,7 +28,7 @@ class TestIntegrations(TestCase):
             'image': 'data:image/jpeg;base64,{}'.format(b64_image.decode())
         })
         json_data = response.get_json()
-        self.assertEqual(json_data['pred'], 'kerry')
+        self.assertEqual(json_data['pred'], 'dublin')
         
 def main():
     tester = TestIntegrations()

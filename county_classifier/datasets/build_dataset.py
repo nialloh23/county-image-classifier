@@ -1,7 +1,3 @@
-from keras.preprocessing.image import ImageDataGenerator
-
-from county_classifier.datasets.dataset import Dataset
-
 import json 
 import glob
 import urllib.request
@@ -10,8 +6,8 @@ import random
 import os
 import toml
 from pathlib import Path
+from county_classifier.datasets.dataset import Dataset
 import shutil
-
 
 ##### DIRECTORIES AND CONSTANTS ####
 
@@ -47,23 +43,8 @@ validation = float(int(validation_percentage)  / 100)
 test = float(int(test_percentage)  / 100)
 
 
-class GaaDataset:
-    def __init__(self):  
-        self.train_dir = Dataset.data_dirname() / 'county_classifier' / 'raw' / 'train'
-        self.validation_dir = Dataset.data_dirname() / 'county_classifier' / 'raw' / 'validation'
-        self.test_dir =  Dataset.data_dirname() / 'county_classifier' / 'raw' / 'test'
-        self.validation_datagen = ImageDataGenerator(rescale=1./255,)
-        self.test_datagen = ImageDataGenerator(rescale=1./255,)
-        self.train_datagen = ImageDataGenerator(
-            rescale=1./255,
-            rotation_range=40,
-            width_shift_range=0.2,
-            height_shift_range=0.2,
-            shear_range=0.2,
-            zoom_range=0.2,
-            horizontal_flip=True
-        )
-    ##### UTILITY FUNCTIONS ####
+
+##### UTILITY FUNCTIONS ####
 
 def downloader(image_url , i):
     file_name = str(i)
@@ -73,6 +54,7 @@ def downloader(image_url , i):
 def number_image_files():
     files = [f for f in dataset_path.glob("**/*.jpg")]
     directory_images = []
+    
     for f in files:
         directory_images.append(f)
     return len(directory_images)
@@ -106,7 +88,7 @@ def load_or_generate_data():
 def extract_label_urls():
     folder_names = []
     label_to_urls = {}
-    for i in list_images_urls():      
+    for i in list_images_urls():
         if i['annotation']['labels'][0] not in folder_names:
             folder_names.append(i['annotation']['labels'][0])
             label_to_urls[i['annotation']['labels'][0]] = [i['content']]
@@ -158,7 +140,7 @@ def download_images():
             k+=1
         os.chdir("../")        
         
-    #Download Test Images
+     #Download Test Images
     os.chdir(test_path_as_string)
     print(os.getcwd())
     for i in label_to_urls.keys():
@@ -168,11 +150,9 @@ def download_images():
         for j in label_to_urls[i][round((train + validation)*(len(label_to_urls[i]))):round((train + validation + test)*(len(label_to_urls[i])))]:
             downloader(j , str(i)+str(k))
             k+=1
-        os.chdir("../") 
+        os.chdir("../")   
+    
 
-def main():
-    dataset = GaaDataset()
+if __name__ == "__main__":
     load_or_generate_data()
-
-if __name__ == '__main__':
-    main()
+    

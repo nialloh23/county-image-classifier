@@ -10,6 +10,8 @@ import hashlib
 import tensorflow as tf
 import io
 from PIL import Image
+import base64
+import re
 
 def read_image(image_uri: Union[Path, str]) -> np.array:
     """Read image_uri."""
@@ -44,27 +46,22 @@ def read_b64_image(encoded_b64_string):
     """Load base64-encoded images."""
     import base64
     try:
-        _, b64_data = encoded_b64_string.split(',')
-        decoded = base64.b64decode(b64_data)
+        _, b64_data = encoded_b64_string.split(',')       
+        decoded = decode_base64(b64_data)
         open_image = Image.open(io.BytesIO(decoded))
         resized_image = open_image.resize((300,300))
         image_array = image.img_to_array(resized_image)
         print(image_array)
         print(image_array.shape)
-       # print(b64_data)
-        #image_array = cv2.imdecode(np.frombuffer(base64.b64decode(b64_data), np.uint8), cv2.IMREAD_COLOR)
-        
-       # image_array = image.img_to_array(image.load_img(BytesIO(base64.b64decode(b64_data))))
-      #  print(image_array)
-        #print(image_array.shape)
-      #  print(image_array.dtype)
-        #image_array_numpy = image_array.np()
-       # print('image array: {}'.format(image_array_numpy))
-    # print(image_array)
-    #    resized_image = cv2.resize(image_array, dsize=(300, 300), interpolation=cv2.INTER_CUBIC)
-
-      #  resized_image = tf.reshape(image_array, [300, 300, 3])
-       # print('image array: {}'.format(resized_image))
         return image_array
+    
     except Exception as e:
         raise ValueError("Could not load image from b64 {}: {}".format(encoded_b64_string, e))
+
+
+def decode_base64(data):
+    """Strips the binary string additions from base64 encoding
+    """
+    data = re.sub('b\'','', data)  # normalize
+    data = re.sub('=\'','=', data)  # normalize              
+    return base64.b64decode(data)

@@ -19,12 +19,13 @@ class CnnModel(Model):
  
     def predict_on_image(self, image: np.ndarray)-> Tuple[str, float]:
         x = np.expand_dims(image, axis=0)
-      #  print('x is: {}'.format(x))
+
         image = np.vstack([x])
-       # print('image is: {}'.format(image))
-       # print('image shape is: {}'.format(image.shape))
+        image = image.astype('float32')
+        image /= 255
         
         pred_raw = self.network.predict(image, batch_size=1).flatten()
+        unflattened_pred_raw = self.network.predict(image, batch_size=1)
         
         index_max_pred = np.argmax(pred_raw)
         confidence_of_prediction = pred_raw[index_max_pred]

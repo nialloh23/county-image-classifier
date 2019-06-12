@@ -25,6 +25,7 @@ def index():
 
 @app.route('/v1/predict', methods=['GET', 'POST'])
 def predict():
+    print("Calling load image function.....")
     image = _load_image()   #This image is a decoded numpy array.
    # with backend.get_session().graph.as_default() as _:
     predictor = CountyImagePredictor()
@@ -37,7 +38,8 @@ def predict():
 
 def _load_image():
     if request.method == 'POST':
-        message = request.get_json()  #this seems to be an encoding of the image image in lots of crazy numbers and letters {'vfb1237213'}
+        message = request.get_json()  #this seems to be an encoding of the image image in lots of crazy numbers and letters
+        print('The json body of the Post message is: {}'.format(message))
         if message is None:
             return 'no json received'
         encoded = message['image']

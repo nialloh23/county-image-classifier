@@ -21,7 +21,7 @@ class TestEvaluateCountyPredictor(unittest.TestCase):
         
         print('loss: {}, acc: {}, time_taken: {}'.format(loss, accuracy, time_taken))
         self.assertGreater(accuracy, 0.2)
-        self.assertLess(time_taken, 10)
+        self.assertLess(time_taken, 15)
         
 
 def main():
