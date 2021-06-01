@@ -50,7 +50,7 @@ tensorflow-estimator==1.13.0
 termcolor==1.1.0
 toml==0.10.0
 tqdm==4.32.1
-urllib3==1.24.3
+urllib3==1.26.5
 wandb==0.7.3
 watchdog==0.9.0
 Werkzeug==0.15.2
