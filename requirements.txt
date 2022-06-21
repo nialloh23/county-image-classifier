@@ -24,7 +24,7 @@ Keras-Preprocessing==1.0.9
 Markdown==3.1
 MarkupSafe==1.1.1
 mock==3.0.5
-numpy==1.16.3
+numpy==1.22.0
 nvidia-ml-py3==7.352.0
 opencv-python==4.1.0.25
 pathtools==0.1.2
